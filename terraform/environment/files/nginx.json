@@ -1,0 +1,21 @@
+[
+  {
+    "image": "public.ecr.aws/nginx/nginx:latest",
+    "logConfiguration": {
+      "logDriver": "awslogs",
+      "options": {
+        "awslogs-create-group": "true",
+        "awslogs-group": "/aws/ecs/nginx-log-group",
+        "awslogs-region": "us-east-1",
+        "awslogs-stream-prefix": "ecs"
+      }
+    },
+    "name": "nginx",
+    "portMappings": [
+      {
+        "containerPort": 80,
+        "protocol": "tcp"
+      }
+    ]
+  }
+]
