@@ -140,13 +140,16 @@ data "aws_iam_policy_document" "nginx-assume-role" {
   }
 }
 
+resource "aws_cloudwatch_log_group" "nginx" {
+  name = "/aws/ecs/nginx-log-group"
+}
+
 data "aws_iam_policy_document" "nginx" {
   statement {
     sid    = "CloudWatchLogs"
     effect = "Allow"
     actions = [
       "logs:PutLogEvents",
-      "logs:CreateLogGroup",
       "logs:CreateLogStream",
     ]
     resources = ["arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:log-group:/aws/ecs/nginx-log-group:*"]
