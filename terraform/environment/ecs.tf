@@ -167,3 +167,73 @@ resource "aws_iam_role_policy_attachment" "nginx-attach" {
   role       = aws_iam_role.nginx.name
   policy_arn = aws_iam_policy.nginx.arn
 }
+
+# terraform doesn't support this so it was deployed through aws
+# console. We would need to deploy all the pieces ourselves if we
+# didn't want to use this terraform resource.
+#
+# https://github.com/hashicorp/terraform-provider-aws/issues/17090
+#
+# resource "aws_cloudwatch_log_subscription_filter" "nginx" {
+#   name = "ecs-nginx-cloudwatch-logs-to-elastic-search"
+
+#   role_arn        = aws_iam_role.ecs-cloudwatch-elastic-search-subscription.arn
+#   log_group_name  = aws_cloudwatch_log_group.nginx.name
+#   filter_pattern  = "- \"ELB-HealthChecker\""
+#   destination_arn = aws_elasticsearch_domain.poc.arn
+# }
+
+resource "aws_iam_role" "ecs-cloudwatch-elastic-search-subscription" {
+  name = "ecs-cloudwatch-elastic-search-subscription"
+
+  assume_role_policy = data.aws_iam_policy_document.ecs-cloudwatch-elastic-search-subscription-assume-role.json
+}
+
+data "aws_iam_policy_document" "ecs-cloudwatch-elastic-search-subscription-assume-role" {
+  statement {
+    effect  = "Allow"
+    actions = ["sts:AssumeRole"]
+
+    principals {
+      type        = "Service"
+      identifiers = ["lambda.amazonaws.com"]
+    }
+  }
+}
+
+resource "aws_iam_policy" "ecs-cloudwatch-elastic-search-subscription" {
+  name = "ecs-cloudwatch-elastic-search-subscription-policy"
+
+  policy = data.aws_iam_policy_document.ecs-cloudwatch-elastic-search-subscription.json
+}
+
+# TODO investigate what the least privileged access could be here.
+data "aws_iam_policy_document" "ecs-cloudwatch-elastic-search-subscription" {
+  statement {
+    sid    = "ElasticSearchAccess"
+    effect = "Allow"
+    actions = [
+      "es:*"
+    ]
+    resources = ["arn:aws:logs:us-east-1:${data.aws_caller_identity.current.account_id}:domain:/poc/*"]
+  }
+
+  statement {
+    sid    = "LambdaAccess"
+    effect = "Allow"
+    actions = [
+      "ec2:CreateNetworkInterface",
+      "ec2:DescribeNetworkInterfaces",
+      "ec2:DeleteNetworkInterface",
+      "logs:PutLogEvents",
+      "logs:CreateLogGroup",
+      "logs:CreateLogStream"
+    ]
+    resources = ["*"]
+  }
+}
+
+resource "aws_iam_role_policy_attachment" "ecs-cloudwatch-elastic-search-subscription-attach" {
+  role       = aws_iam_role.ecs-cloudwatch-elastic-search-subscription.name
+  policy_arn = aws_iam_policy.ecs-cloudwatch-elastic-search-subscription.arn
+}
