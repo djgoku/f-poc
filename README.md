@@ -4,6 +4,7 @@
 
 * terraform 0.14.11
 * python pip awscli pre-commit
+* aws session manager plugin (https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html, and this https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-getting-started-enable-ssh-connections.html#ssh-connections-enable)
 
 1. Create new AWS Account setup root user with MFA.
 2. Create another user with `AdministratorAccess` role attached and also setup MFA.
@@ -41,6 +42,8 @@ https://aws.amazon.com/premiumsupport/knowledge-center/systems-manager-ssh-vpc-r
 1. change directory to `terraform/environment`
 2. `terraform init`
 3. `terraform apply`
+
+After elastic search is up and running you need to follow the directions for `I'm unable to stream my CloudWatch log group to an Amazon ES domain when fine-grained access control is enabled` from https://aws.amazon.com/tr/premiumsupport/knowledge-center/es-troubleshoot-cloudwatch-logs/
 
 ## Security Recommendations
 
