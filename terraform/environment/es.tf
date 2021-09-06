@@ -41,6 +41,22 @@ resource "aws_elasticsearch_domain" "poc" {
       master_user_password = var.master_user_password
     }
   }
+
+  access_policies = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Effect": "Allow",
+      "Principal": {
+        "AWS": "*"
+      },
+      "Action": "es:*",
+      "Resource": "arn:aws:es:us-east-1:${data.aws_caller_identity.current.account_id}:domain/poc/*"
+    }
+  ]
+}
+POLICY
 }
 
 resource "aws_security_group" "elastic-search" {
