@@ -45,7 +45,7 @@ https://aws.amazon.com/premiumsupport/knowledge-center/systems-manager-ssh-vpc-r
 
 After elastic search is up and running you need to follow the directions for `I'm unable to stream my CloudWatch log group to an Amazon ES domain when fine-grained access control is enabled` from https://aws.amazon.com/tr/premiumsupport/knowledge-center/es-troubleshoot-cloudwatch-logs/
 
-## Security Recommendations
+## Recommendations
 
 If someone is wanting to limit egress of internet access I would switch to VPC Endpoint(s). This can cost slightly more than a NAT gateway and it also has a lot more configuration involved but it gives the most control and is a very secure approach.
 
@@ -71,3 +71,4 @@ If someone is wanting to limit egress of internet access I would switch to VPC E
 
 * tf-state should have more limited IAM policies for s3/dyanmodb.
 * Name/tag all things to allow for better tracking/understanding resources.
+* break up `terraform/environment/*` into a couple different modules to help with speed since elastic search can take awhile to deploy.
